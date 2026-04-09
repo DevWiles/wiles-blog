@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: myblog
+
+  # 数据源配置
+  # 思考：为什么需要连接池？
+  # 1. 创建数据库连接是昂贵的操作（TCP握手、认证等）
+  # 2. 连接池复用连接，提高性能
+  # 3. HikariCP是Spring Boot默认连接池，性能优秀
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/myblog?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+
+  # Redis配置
+  # 思考：Redis在博客系统中的应用
+  # 1. 浏览量计数：利用INCR原子操作，避免数据库锁竞争
+  # 2. 缓存热门文章：减少数据库查询压力
+  # 3. 分布式Session：多实例部署时共享登录状态
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      # password: 123456  # 如果Redis设置了密码
+
+# MyBatis-Plus配置
+# 思考：这些配置的作用
+# 1. mapper-locations: 指定XML映射文件位置（自定义SQL时使用）
+# 2. configuration.map-underscore-to-camel-case: 自动映射下划线到驼峰
+# 3. global-config.db-config: 全局配置，如主键策略、逻辑删除等
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    # 开发环境开启SQL日志，方便调试和学习
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # 主键策略：AUTO=数据库自增，ASSIGN_ID=雪花算法
+      id-type: auto
+
+# 管理员配置（简单登录用）
+# 思考：实际项目中密码应该如何处理？
+# 1. 不能明文存储，应该使用BCrypt等加密算法
+# 2. 应该存储在数据库中，支持修改
+# 3. 这里为了学习简化，放在配置文件中
+admin:
+  username: admin
+  password: admin123
+
+# 服务端口
+server:
+  port: 8080
